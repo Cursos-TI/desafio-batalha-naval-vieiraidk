@@ -1,40 +1,106 @@
 #include <stdio.h>
+#include <stdbool.h>
 
-// Desafio Batalha Naval - MateCheck
-// Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
-// Siga os comentários para implementar cada parte do desafio.
+#define N 10
+#define SHIP_SIZE 3
+#define WATER 0
+#define SHIP 3
 
-int main() {
-    // Nível Novato - Posicionamento dos Navios
-    // Sugestão: Declare uma matriz bidimensional para representar o tabuleiro (Ex: int tabuleiro[5][5];).
-    // Sugestão: Posicione dois navios no tabuleiro, um verticalmente e outro horizontalmente.
-    // Sugestão: Utilize `printf` para exibir as coordenadas de cada parte dos navios.
+void inicializar_tabuleiro(int board[N][N]);
+bool pode_posicionar_horizontal(int board[N][N], int row, int col_start);
+bool pode_posicionar_vertical(int board[N][N], int row_start, int col);
+void posicionar_horizontal(int board[N][N], int row, int col_start);
+void posicionar_vertical(int board[N][N], int row_start, int col);
+void imprimir_tabuleiro(int board[N][N]);
 
-    // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-    // Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-    // Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-    // Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
+int main(void) {
+    int board[N][N];
 
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
+    int h_row = 2;
+    int h_col_start = 4;
 
-    // Exemplos de exibição das habilidades:
-    // Exemplo para habilidade em cone:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 1 1 1 1 1
-    
-    // Exemplo para habilidade em octaedro:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 0 0 1 0 0
+    int v_row_start = 5;
+    int v_col = 7;
 
-    // Exemplo para habilidade em cruz:
-    // 0 0 1 0 0
-    // 1 1 1 1 1
-    // 0 0 1 0 0
+    inicializar_tabuleiro(board);
+
+    if (!pode_posicionar_horizontal(board, h_row, h_col_start)) {
+        printf("Erro: nao eh possivel posicionar o navio horizontal nas coordenadas (%d,%d).\n",
+               h_row, h_col_start);
+        return 1;
+    }
+    posicionar_horizontal(board, h_row, h_col_start);
+
+    if (!pode_posicionar_vertical(board, v_row_start, v_col)) {
+        printf("Erro: nao eh possivel posicionar o navio vertical nas coordenadas (%d,%d).\n",
+               v_row_start, v_col);
+        return 1;
+    }
+    posicionar_vertical(board, v_row_start, v_col);
+
+    imprimir_tabuleiro(board);
 
     return 0;
+}
+
+void inicializar_tabuleiro(int board[N][N]) {
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            board[i][j] = WATER;
+        }
+    }
+}
+
+bool pode_posicionar_horizontal(int board[N][N], int row, int col_start) {
+    if (row < 0 || row >= N) return false;
+    if (col_start < 0 || col_start + SHIP_SIZE - 1 >= N) return false;
+
+    for (int c = col_start; c < col_start + SHIP_SIZE; ++c) {
+        if (board[row][c] != WATER) return false;
+    }
+    return true;
+}
+
+bool pode_posicionar_vertical(int board[N][N], int row_start, int col) {
+    if (col < 0 || col >= N) return false;
+    if (row_start < 0 || row_start + SHIP_SIZE - 1 >= N) return false;
+
+    for (int r = row_start; r < row_start + SHIP_SIZE; ++r) {
+        if (board[r][col] != WATER) return false;
+    }
+    return true;
+}
+
+void posicionar_horizontal(int board[N][N], int row, int col_start) {
+    for (int c = col_start; c < col_start + SHIP_SIZE; ++c) {
+        board[row][c] = SHIP;
+    }
+}
+
+void posicionar_vertical(int board[N][N], int row_start, int col) {
+    for (int r = row_start; r < row_start + SHIP_SIZE; ++r) {
+        board[r][col] = SHIP;
+    }
+}
+
+void imprimir_tabuleiro(int board[N][N]) {
+    printf("Tabuleiro (0 = agua, 3 = navio):\n\n");
+
+    printf("   ");
+    for (int c = 0; c < N; ++c) {
+        printf("%2d ", c);
+    }
+    printf("\n");
+
+    printf("   ");
+    for (int c = 0; c < N; ++c) printf("---");
+    printf("\n");
+
+    for (int r = 0; r < N; ++r) {
+        printf("%2d |", r);
+        for (int c = 0; c < N; ++c) {
+            printf("%2d ", board[r][c]);
+        }
+        printf("\n");
+    }
 }
